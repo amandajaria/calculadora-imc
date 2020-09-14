@@ -1,0 +1,140 @@
+import 'package:flutter/material.dart';
+import 'dart:math';
+//import 'widget_imc.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: "Calcula IMC",
+      home: ImcWidget()
+      
+      
+    );
+  }
+}
+ /////////////
+
+
+class ImcWidget extends StatefulWidget {
+  @override
+  _ImcWidgetState createState() => _ImcWidgetState();
+}
+
+class _ImcWidgetState extends State<ImcWidget> {
+  GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+  TextEditingController txtPeso = TextEditingController();
+  TextEditingController txtAltura = TextEditingController();
+  String _resultado = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: Text("Calculadora de IMC"),
+          centerTitle: true,
+          backgroundColor: Colors.pink[100],
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                _reset();
+              },
+            )
+          ]),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formkey,
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Icon(Icons.people, size: 80, color: Colors.pink[300]),
+
+                campoTexto("Peso",txtPeso),
+                campoTexto("Altura",txtAltura),
+                botaoCalcular(context),
+                exibirResultado(),
+
+              ]),
+        ),
+      ),
+      backgroundColor: Colors.white,
+    );
+  }
+
+  campoTexto(rotulo, controle) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        style: TextStyle(color: Colors.pink[900], fontSize: 20),
+        decoration: InputDecoration(
+          labelText: rotulo,
+          labelStyle: TextStyle(
+            color: Colors.pink[500],
+            fontSize: 12,
+          ),
+        ),
+        controller: controle,
+        validator: (value) {
+          return (value.isEmpty) ? "Informe o valor" : null;
+        },
+      ),
+    );
+  }
+  
+    botaoCalcular(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.only(top: 20),
+        child: RaisedButton(
+          child: Text(
+            "calcular",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+            ),
+          ),
+          color: Colors.grey[500],
+          onPressed: () {
+            if (_formkey.currentState.validate()) {
+              _calcular();
+            }
+          },
+        ));
+  }
+  
+    void _calcular() {
+    setState(() {
+      double peso = double.parse(txtPeso.text);
+      double altura = double.parse(txtAltura.text);
+      double imc = peso / pow(altura, 2);
+      _resultado = "Resultado\nIMC = ${imc.toStringAsPrecision(2)}";
+    });
+  }
+
+  exibirResultado() {
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Text(_resultado,
+          style: TextStyle(color: Colors.pink[800], fontSize: 20)),
+    );
+  }
+  
+    void _reset() {
+    setState(() {
+      txtPeso.text = "";
+      txtAltura.text = "";
+      _resultado = "";
+    });
+  }
+}
